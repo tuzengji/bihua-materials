@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#e7e2d8">
   <meta name="description" content="你比划我猜、传词游戏的共享素材库。一起收集好题，随时开猜。">
   <title>飞手传书 · 游戏素材库</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=flying-letter">
-  <link rel="stylesheet" href="/styles.css">
-  <script type="module" src="/app.js"></script>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=20261020">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
 </head>
 <body>
   <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -32,7 +32,7 @@
   </svg>
 
   <header class="site-header wrap">
-    <a class="brand" href="/" aria-label="飞手传书首页"><img class="brand-mark" src="/favicon.svg?v=flying-letter" width="34" height="38" alt="">飞手传书</a>
+    <a class="brand" href="./" aria-label="飞手传书首页"><img class="brand-mark" src="./favicon.svg?v=20261020" width="34" height="38" alt="">飞手传书</a>
     <nav class="main-nav" aria-label="主导航">
       <button class="nav-button active" id="nav-library" type="button">素材库</button>
       <button class="nav-button" id="nav-game" type="button">现在玩</button>
@@ -114,7 +114,7 @@
     <div class="import-tabs" role="tablist" aria-label="导入方式"><button id="tab-csv" class="import-tab active" role="tab" aria-selected="true" aria-controls="csv-panel" data-import-tab="csv" type="button">CSV 文件</button><button id="tab-paste" class="import-tab" role="tab" aria-selected="false" aria-controls="paste-panel" data-import-tab="paste" type="button">批量粘贴</button></div>
     <div id="csv-panel" role="tabpanel" aria-labelledby="tab-csv">
       <label class="dropzone" id="dropzone"><input type="file" id="csv-file" accept=".csv,text/csv" class="sr-only"><svg class="icon"><use href="#i-upload"/></svg><strong id="file-name">选择或拖入 CSV 文件</strong><span>最大 5 MB</span></label>
-      <a class="text-button template-link" href="/api/materials/template" download><svg class="icon"><use href="#i-download"/></svg>下载导入模板</a>
+      <a class="text-button template-link" href="./api/materials/template" download><svg class="icon"><use href="#i-download"/></svg>下载导入模板</a>
     </div>
     <div id="paste-panel" role="tabpanel" aria-labelledby="tab-paste" hidden>
       <label class="field"><span>一行一条</span><textarea id="paste-text" rows="6" placeholder="孙悟空&#10;星星&#10;命运的齿轮开始转动了"></textarea></label>

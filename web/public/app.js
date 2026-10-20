@@ -53,7 +53,7 @@ function toast(message) {
 }
 function inlineError(selector, message = '') { const node = $(selector); node.textContent = message; node.hidden = !message; }
 async function api(path, options = {}) {
-  const response = await fetch(path, { ...options, headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers } });
+  const response = await fetch(path.replace(/^\//, ''), { ...options, headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers } });
   if (response.status === 204) return null;
   const body = await response.json();
   if (!response.ok) { const error = new Error(body.error || '请求没有完成，请重试'); error.details = body.details; throw error; }
@@ -86,7 +86,7 @@ async function refresh({ force = false, silent = false } = {}) {
     if (sequence !== requestSequence) return;
     setConnection(false);
     if (!loaded) renderEmpty('还没连上题库', '请确认本地服务正在运行。', '重新连接', () => refresh());
-    if (!silent) toast(error.message === 'Failed to fetch' ? '连接中断，请确认本地服务已启动' : error.message);
+    if (!silent) toast(error.message === 'Failed to fetch' ? '连接中断，请稍后重试' : error.message);
   }
 }
 function filtered() { return filterMaterials(state.materials, state.filters); }
@@ -444,7 +444,7 @@ function downloadExport(format) {
     link.href = blobURL;
     const label = format === 'csv' ? '完整表格' : format === 'lines' ? '一行一条' : '顿号连接';
     link.download = `飞手传书-所选${items.length}条-${label}.${format === 'csv' ? 'csv' : 'txt'}`;
-  } else { link.href = '/api/materials/export?' + exportQuery(format); link.download = ''; }
+  } else { link.href = './api/materials/export?' + exportQuery(format); link.download = ''; }
   document.body.append(link); link.click(); link.remove(); $('#export-dialog').close();
   if (blobURL) setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
 }

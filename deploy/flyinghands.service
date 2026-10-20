@@ -1,0 +1,30 @@
+[Unit]
+Description=Flying Hands shared game materials
+After=network.target
+
+[Service]
+Type=simple
+User=flyinghands
+Group=flyinghands
+WorkingDirectory=/opt/flyinghands/current/web
+ExecStart=/opt/flyinghands/node/bin/node server.mjs
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=8766
+Environment=MATERIALS_DB=/var/lib/flyinghands/materials.sqlite
+Restart=on-failure
+RestartSec=3
+StateDirectory=flyinghands
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/flyinghands
+Slice=system-shouyulove.slice
+MemoryMax=256M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

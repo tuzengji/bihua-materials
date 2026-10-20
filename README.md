@@ -1,6 +1,15 @@
 # 飞手传书
 
-供“你比划我猜”和“传词游戏”使用的共享素材库，适配手机和电脑，在本机或同一局域网内使用。
+供“你比划我猜”和“传词游戏”使用的共享素材库，适配手机和电脑。
+
+正式地址：<https://shouyulove.cn/flyinghands/>
+
+设计者：王宁静
+
+线上保留公开共建：所有访问者均可浏览、抽题、导出，以及新增、修改、删除共享素材。
+部署维护见 [`deploy/README.md`](deploy/README.md)。原项目为
+[Lynn07160419/bihua-materials](https://github.com/Lynn07160419/bihua-materials)，
+服务器部署分支维护在 [tuzengji/bihua-materials](https://github.com/tuzengji/bihua-materials)。
 
 - 素材分类：长盛不衰（诗词、经典词语、经典句子）、引领潮流（梗句、歌词），以及星标精选“经典永流传”。
 - 支持新增、编辑、删除、搜索、批量粘贴、CSV 导入、多选导出和批量删除。

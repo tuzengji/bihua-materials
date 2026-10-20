@@ -112,7 +112,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     console.error(error.code === 'EADDRINUSE' ? `端口 ${port} 已被占用。可运行 PORT=3001 npm start 更换端口。` : `启动失败：${error.message}`);
     process.exit(1);
   });
-  server.listen(port, '0.0.0.0', () => {
+  server.listen(port, process.env.HOST || '0.0.0.0', () => {
     console.log(`\n飞手传书 · 游戏素材库\n本机预览：http://localhost:${port}`);
     for (const network of Object.values(networkInterfaces())) for (const address of network || []) {
       if (address.family === 'IPv4' && !address.internal) console.log(`局域网访问：http://${address.address}:${port}`);
