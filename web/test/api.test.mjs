@@ -135,11 +135,11 @@ test('共享素材 API：录入、筛选、修改、导入、导出与持久化'
   });
 });
 
-test('首批题库包含 154 条来源素材与 3 条演示；词语与句子分类清晰且不重复', async () => {
+test('首批题库包含 155 条来源素材与 3 条演示；词语与句子分类清晰且不重复', async () => {
   const app = await start(':memory:', true);
   try {
     const { data } = await app.request('/api/materials');
-    assert.equal(data.items.length, 157); assert.equal(data.items.filter(item => item.isDemo).length, 3);
+    assert.equal(data.items.length, 158); assert.equal(data.items.filter(item => item.isDemo).length, 3);
     assert.equal(data.items.filter(item => item.isClassic).length, 0);
     assert.equal(data.items.find(item => item.text === '北').type, 'general');
     assert.equal(data.items.find(item => item.text === '不烧心，规矩不能坏').type, 'meme');

@@ -15,6 +15,7 @@
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.8 6.4.9-4.6 4.5 1.1 6.3-5.7-3-5.7 3 1.1-6.3-4.6-4.5 6.4-.9Z"/></symbol>
     <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></symbol>
@@ -67,12 +68,10 @@
       <section class="library-section" aria-label="素材列表">
         <div class="library-heading">
           <div class="heading-title"><h2 id="library-title">所有素材</h2><span id="result-count" class="result-count" aria-live="polite">…</span></div>
+          <label class="search-box"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">搜索素材</span><input id="search" type="search" placeholder="搜个词，找点灵感" autocomplete="off"></label>
           <div class="library-actions"><button class="button button-plain" id="selection-toggle" type="button" aria-pressed="false">多选</button><button class="button button-plain" id="export-open" type="button"><svg class="icon"><use href="#i-download"/></svg>导出</button><button class="button button-plain" id="import-open" type="button"><svg class="icon"><use href="#i-upload"/></svg>批量导入</button></div>
         </div>
-        <div class="filter-row">
-          <label class="search-box"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">搜索素材</span><input id="search" type="search" placeholder="搜个词，找点灵感" autocomplete="off"></label>
-          <div id="selection-tools" class="selection-tools" hidden><span id="selection-count" aria-live="polite">已选 0 条</span><button class="text-button" id="select-results" type="button">全选当前结果</button><button class="text-button" id="clear-selection" type="button">清空选择</button><button class="text-button selection-delete" id="delete-selected" type="button" disabled>删除所选</button></div>
-        </div>
+        <div id="selection-tools" class="selection-tools" hidden><span id="selection-count" aria-live="polite">已选 0 条</span><button class="text-button" id="select-results" type="button">全选当前结果</button><button class="text-button" id="clear-selection" type="button">清空选择</button><button class="text-button selection-delete" id="delete-selected" type="button" disabled>删除所选</button></div>
         <div id="material-grid" class="material-grid" role="region" aria-label="素材浏览区" tabindex="0" aria-live="polite"><p class="loading">正在打开题库…</p></div>
         <div class="load-more-wrap"><button class="button button-outline" id="load-more" type="button" aria-controls="material-grid" aria-expanded="false" hidden>展开更多</button></div>
       </section>
@@ -80,13 +79,23 @@
     </section>
 
     <section id="game-view" class="wrap game-view" hidden>
-      <div class="game-heading"><div><h1>轮到你比划！</h1><button class="text-button" id="game-back" type="button">← 返回选题</button></div><div class="game-options"><label class="game-library-picker"><span class="sr-only">选择题库</span><select id="game-library"></select></label><div class="mode-switch" aria-label="玩法提示"><button class="mode-button active" data-mode="guess" type="button">你比划我猜</button><button class="mode-button" data-mode="relay" type="button">传词游戏</button></div></div></div>
+      <div class="game-heading">
+        <h1>轮到你比划！</h1>
+        <div class="game-options">
+          <div class="game-library-picker" id="game-library-picker">
+            <span class="sr-only" id="game-library-name">选择题库</span>
+            <button class="game-library-trigger" id="game-library" type="button" role="combobox" aria-labelledby="game-library-name game-library-label" aria-haspopup="listbox" aria-expanded="false" aria-controls="game-library-list"><span id="game-library-label">全部素材</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+            <div class="game-library-list" id="game-library-list" role="listbox" aria-label="题库列表" hidden></div>
+          </div>
+          <div class="mode-switch" aria-label="玩法提示"><button class="mode-button active" data-mode="guess" type="button">你比划我猜</button><button class="mode-button" data-mode="relay" type="button">传词游戏</button></div>
+        </div>
+      </div>
       <section class="game-stage" id="game-stage" aria-label="出题区">
         <div class="stage-top"><span class="stage-label" id="game-counter">准备就绪</span><button class="icon-button" id="fullscreen-button" type="button" aria-label="全屏展示" title="全屏展示"><svg class="icon"><use href="#i-full"/></svg></button></div>
         <div class="stage-content" id="stage-content" aria-live="polite"></div>
         <div class="stage-controls" id="stage-controls"></div>
       </section>
-      <div class="game-bottom"><span class="keyboard-tip">空格 显示／隐藏 · → 下一题</span><button class="text-button" id="restart-round" type="button" hidden><svg class="icon"><use href="#i-refresh"/></svg>重新抽题</button></div>
+      <div class="game-bottom"><span class="keyboard-tip">空格 开始游戏</span><button class="text-button" id="restart-round" type="button" hidden><svg class="icon"><use href="#i-refresh"/></svg>重新抽题</button></div>
     </section>
   </main>
 
@@ -94,7 +103,7 @@
     <form id="editor-form">
       <div class="modal-heading"><h2 id="editor-title">添加素材</h2><button class="icon-button" type="button" data-close="editor-dialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button></div>
       <label class="field"><span>题目 <span class="required">*</span></span><textarea id="editor-text" name="text" rows="4" maxlength="10000" placeholder="一个词、一句歌词，或一个让人笑出声的梗" required></textarea></label>
-      <label class="field"><span>分类</span><select id="editor-type" name="type"><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗句</option><option value="lyrics">歌词</option></optgroup></select></label>
+      <div class="field"><label id="editor-type-name" for="editor-type">分类</label><select id="editor-type" name="type" data-web-select><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗句</option><option value="lyrics">歌词</option></optgroup></select></div>
       <label class="field"><span>备注</span><textarea id="editor-notes" name="notes" rows="2" maxlength="2000" placeholder="歌名、出处，或玩法提示（可选）"></textarea></label>
       <label class="checkbox-label"><input id="editor-classic" name="isClassic" type="checkbox"><svg class="icon"><use href="#i-star"/></svg>收进经典永流传</label>
       <p id="editor-error" class="form-error" role="alert" hidden></p>
@@ -118,7 +127,10 @@
     </div>
     <div id="paste-panel" role="tabpanel" aria-labelledby="tab-paste" hidden>
       <label class="field"><span>一行一条</span><textarea id="paste-text" rows="6" placeholder="孙悟空&#10;星星&#10;命运的齿轮开始转动了"></textarea></label>
-      <div class="field-pair"><label class="field"><span>统一分类</span><select id="paste-type"><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗句</option><option value="lyrics">歌词</option></optgroup></select></label><label class="field"><span>统一难度</span><select id="paste-difficulty"><option value="easy">简单</option><option value="normal" selected>普通</option><option value="hard">挑战</option></select></label></div>
+      <div class="field-pair">
+        <div class="field"><label id="paste-type-name" for="paste-type">统一分类</label><select id="paste-type" data-web-select><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗句</option><option value="lyrics">歌词</option></optgroup></select></div>
+        <div class="field"><label id="paste-difficulty-name" for="paste-difficulty">统一难度</label><select id="paste-difficulty" data-web-select><option value="easy">简单</option><option value="normal" selected>普通</option><option value="hard">挑战</option></select></div>
+      </div>
       <label class="field"><span>标签</span><input id="paste-tags" placeholder="用顿号或逗号分隔（可选）"></label>
     </div>
     <p id="import-error" class="form-error" role="alert" hidden></p>
