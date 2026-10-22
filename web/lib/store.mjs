@@ -22,6 +22,10 @@ export function createStore(filename, { seed = true } = {}) {
       is_demo INTEGER NOT NULL DEFAULT 0, signature TEXT NOT NULL UNIQUE,
       created_at TEXT NOT NULL, updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS deletion_audit (
+      id INTEGER PRIMARY KEY, material_id TEXT NOT NULL, material_text TEXT NOT NULL,
+      material_type TEXT NOT NULL, actor_name TEXT NOT NULL, deleted_at TEXT NOT NULL
+    );
   `);
   const insert = db.prepare('INSERT INTO materials VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   const select = db.prepare('SELECT * FROM materials WHERE id = ?');
@@ -88,16 +92,21 @@ export function createStore(filename, { seed = true } = {}) {
         .run(item.text, item.type, item.difficulty, JSON.stringify(item.tags), item.notes, item.source, +item.isClassic, +item.isDemo, signature(item), now, id);
       return fromRow(select.get(id));
     },
-    remove(id) { this.get(id); db.prepare('DELETE FROM materials WHERE id = ?').run(id); },
-    removeMany(ids) {
+    remove(id, options = {}) { this.get(id); this.removeMany([id], options); },
+    removeMany(ids, { actor } = {}) {
       if (!Array.isArray(ids) || !ids.length) throw new StoreError('请先选择需要删除的素材');
       if (ids.length > 5000) throw new StoreError('一次最多删除 5000 条素材');
       if (ids.some(id => typeof id !== 'string' || !/^[a-zA-Z0-9-]{1,128}$/.test(id))) throw new StoreError('所选素材编号格式不正确');
       const uniqueIds = [...new Set(ids)], remove = db.prepare('DELETE FROM materials WHERE id = ?');
+      const audit = db.prepare('INSERT INTO deletion_audit (material_id, material_text, material_type, actor_name, deleted_at) VALUES (?, ?, ?, ?, ?)');
       let deleted = 0;
       db.exec('BEGIN IMMEDIATE');
       try {
-        for (const id of uniqueIds) deleted += Number(remove.run(id).changes);
+        for (const id of uniqueIds) {
+          const item = fromRow(select.get(id));
+          const changes = Number(remove.run(id).changes); deleted += changes;
+          if (changes && actor) audit.run(id, item.text, item.type, actor, new Date().toISOString());
+        }
         db.exec('COMMIT');
       } catch (error) { db.exec('ROLLBACK'); throw error; }
       return { deleted, alreadyDeleted: uniqueIds.length - deleted };

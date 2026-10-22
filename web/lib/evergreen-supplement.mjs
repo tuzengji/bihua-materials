@@ -1,4 +1,4 @@
-// 题库.md 的“经典词”“经典句子”区块；按用户确认删除“连展”，“响”改为“向”。
+// 原题库的经典词语；按用户确认不收录“连展”。
 const words = [
   '绘画', '唱歌', '电影', '照片', '故事', '图书馆',
   '走', '跑', '跳', '寻找', '帮忙', '推开',
@@ -17,22 +17,7 @@ const words = [
   '穿外套', '脱外套', '雨伞', '雨衣', '牙刷',
   '牙膏', '手表', '闹钟', '南瓜', '冬瓜',
 ];
-const sentences = [
-  '我们一起去图书馆看书',
-  '大家互相帮忙完成任务',
-  '周末结伴去山里看风景',
-  '朋友送给我一份小礼物',
-  '下雨天记得小心走路',
-  '演员在台上表演舞蹈',
-  '傍晚的晚霞十分好看',
-  '我们合作完成这次活动',
-  '风把云朵吹向远方',
-];
-
-export const evergreenSupplement = [
-  ...words.map(text => ({ text, type: 'general' })),
-  ...sentences.map(text => ({ text, type: 'sentence' })),
-].map(item => ({
-  ...item, difficulty: 'normal', tags: [], notes: '',
+export const evergreenSupplement = words.map(text => ({
+  text, type: 'general', difficulty: 'normal', tags: [], notes: '',
   source: '题库.md', isClassic: false, isDemo: false,
 }));

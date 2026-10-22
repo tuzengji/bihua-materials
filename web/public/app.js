@@ -374,12 +374,15 @@ function renderLibrary({ animate = false, fromIndex = 0 } = {}) {
       const star = button('', `icon-button favorite-button${item.isClassic ? ' selected' : ''}`, () => toggleClassic(item, star), 'star');
       star.setAttribute('aria-label', `${item.isClassic ? '移出经典永流传' : '收进经典永流传'}：${item.text.slice(0, 30)}`);
       star.setAttribute('aria-pressed', item.isClassic); star.title = item.isClassic ? '移出经典永流传' : '收进经典永流传';
+      const remove = button('删除', 'card-delete', () => askDelete(item));
+      remove.setAttribute('aria-label', `删除词条：${item.text}`);
+      const actions = element('div', 'card-actions'); actions.append(star, remove);
       const open = button('', 'card-open', () => state.selecting ? selectMaterial(item.id, !state.selectedIds.has(item.id)) : openDetail(item.id));
       open.setAttribute('aria-label', `${state.selecting ? '选择词条' : '查看素材'}：${item.text}`);
       if (state.selecting) open.setAttribute('aria-pressed', state.selectedIds.has(item.id));
       open.append(element('h4', 'card-text', item.text));
       card.classList.toggle('selected-material', state.selectedIds.has(item.id));
-      card.append(open, star); cards.append(card);
+      card.append(open, actions); cards.append(card);
     }
     section.append(cards); fragment.append(section);
   }
@@ -445,30 +448,41 @@ function askDeleteSelection() {
   openDeleteConfirmation(items, true);
 }
 function openDeleteConfirmation(items, batch = false) {
-  state.deleting = { items: [...items], batch };
-  $('#delete-title').textContent = batch ? `删除所选的 ${items.length} 条素材？` : '删除这条素材？';
+  closePickers(); state.deleting = { items: [...items], batch, busy: false };
+  $('#delete-form').reset();
+  $('#delete-title').textContent = batch ? '批量删除 · 权限验证' : '删除权限验证';
   $('#delete-text').textContent = batch ? items.map((item, index) => `${index + 1}. ${item.text}`).join('\n\n') : items[0].text;
-  $('#confirm-delete').textContent = batch ? `删除 ${items.length} 条` : '确认删除';
+  $('#confirm-delete').textContent = batch ? `验证并删除 ${items.length} 条` : '验证并删除';
   inlineError('#delete-error');
-  $('#confirm-delete').disabled = false; $('#delete-dialog').showModal();
+  for (const node of $$('#delete-form button, #delete-form input')) node.disabled = false;
+  $('#delete-dialog').showModal(); $('#delete-name').focus();
 }
-async function confirmDelete() {
-  const pending = state.deleting; if (!pending) return;
-  $('#confirm-delete').disabled = true;
+async function confirmDelete(event) {
+  event.preventDefault();
+  const pending = state.deleting; if (!pending || pending.busy) return;
+  const auth = { name: $('#delete-name').value.trim(), password: $('#delete-password').value };
+  $('#delete-password').value = ''; inlineError('#delete-error');
+  pending.busy = true;
+  const controls = $$('#delete-form button, #delete-form input');
+  controls.forEach(node => { node.disabled = true; });
   try {
     const ids = pending.items.map(item => item.id);
     const result = pending.batch
-      ? await api('/api/materials', { method: 'DELETE', body: JSON.stringify({ ids }) })
-      : await api(`/api/materials/${ids[0]}`, { method: 'DELETE' });
-    $('#delete-dialog').close();
+      ? await api('/api/materials', { method: 'DELETE', body: JSON.stringify({ ids, auth }) })
+      : await api(`/api/materials/${ids[0]}`, { method: 'DELETE', body: JSON.stringify({ auth }) });
     for (const id of ids) state.selectedIds.delete(id);
     if ($('#detail-dialog').open && ids.includes(state.detailId)) $('#detail-dialog').close();
     if ($('#editor-dialog').open && ids.includes(state.editing?.id)) $('#editor-dialog').close();
     await refresh({ force: true });
+    $('#delete-dialog').close();
     toast(!pending.batch ? '素材已删除' : !result.deleted ? '所选素材已被其他成员删除'
       : `已删除 ${result.deleted} 条素材${result.alreadyDeleted ? `，另有 ${result.alreadyDeleted} 条已被删除` : ''}`);
   } catch (error) { inlineError('#delete-error', error.message); }
-  finally { $('#confirm-delete').disabled = false; }
+  finally {
+    auth.password = ''; pending.busy = false;
+    controls.forEach(node => { node.disabled = false; });
+    if ($('#delete-dialog').open) ($('#delete-name').value.trim() ? $('#delete-password') : $('#delete-name')).focus();
+  }
 }
 
 function clearPreview() {
@@ -687,10 +701,16 @@ $('#editor-delete').addEventListener('click', () => askDelete(state.editing));
 $('#detail-edit').addEventListener('click', () => { const item = state.materials.find(item => item.id === state.detailId); $('#detail-dialog').close(); if (item) openEditor(item); });
 $('#detail-delete').addEventListener('click', () => askDelete(state.materials.find(item => item.id === state.detailId)));
 $('#detail-classic').addEventListener('click', () => toggleClassic(state.materials.find(item => item.id === state.detailId), $('#detail-classic')));
-$('#confirm-delete').addEventListener('click', confirmDelete);
+$('#delete-form').addEventListener('submit', confirmDelete);
+$('#delete-dialog').addEventListener('cancel', event => { if (state.deleting?.busy) event.preventDefault(); });
+$('#delete-dialog').addEventListener('close', () => {
+  if ($('#delete-dialog').open) return;
+  $('#delete-form').reset(); state.deleting = null; inlineError('#delete-error');
+});
 for (const node of $$('[data-close]')) node.addEventListener('click', () => document.getElementById(node.dataset.close).close());
 for (const dialog of $$('dialog')) dialog.addEventListener('click', event => {
   if (event.target !== dialog) return;
+  if (dialog.id === 'delete-dialog' && state.deleting?.busy) return;
   const rect = dialog.getBoundingClientRect();
   if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
 });

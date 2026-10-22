@@ -26,6 +26,10 @@ Nginx 去除 `/flyinghands/` 前缀后转发给 Node.js。网页资源、模板�
 
 更改 Nginx 时，持 `/run/lock/nginx-deploy.lock` 完成备份、修改、`nginx -t`、平滑重载及失败回退。普通代码更新无需改动或重载 Nginx。
 
+## 删除验证
+
+2026-10-22 同步上游 `45af477`，用户确认启用姓名和管理密码验证。服务通过 `ADMIN_AUTH_FILE=/var/lib/flyinghands/admin.json` 读取独立配置；未配置时删除返回 503，其他操作正常。密码文件不纳入 Git 或静态目录。线上现有素材保留，不重新导入上游种子题库。
+
 ## 图标
 
 沿用原项目的手掌与纸飞机意象，使用主站现有灰绿描边、米色手掌、灰蓝飞机、豆沙折面和浅绿袖口。可编辑母版在 `web/public/favicon.svg`，主站副本在 `project-logos/20261020-flyinghands/`。使用圆角描边，已检查透明背景和手机尺寸。

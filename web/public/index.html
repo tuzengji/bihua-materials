@@ -60,7 +60,7 @@
           <button class="subcategory" data-type="poetry" data-parent="evergreen" type="button" aria-pressed="false"><span>诗词</span><span class="subcategory-count">0</span></button>
           <button class="subcategory" data-type="general" data-parent="evergreen" type="button" aria-pressed="false"><span>经典词语</span><span class="subcategory-count">0</span></button>
           <button class="subcategory" data-type="sentence" data-parent="evergreen" type="button" aria-pressed="false"><span>经典句子</span><span class="subcategory-count">0</span></button>
-          <button class="subcategory" data-type="meme" data-parent="trending" type="button" aria-pressed="false"><span>梗句</span><span class="subcategory-count">0</span></button>
+          <button class="subcategory" data-type="meme" data-parent="trending" type="button" aria-pressed="false"><span>梗</span><span class="subcategory-count">0</span></button>
           <button class="subcategory" data-type="lyrics" data-parent="trending" type="button" aria-pressed="false"><span>歌词</span><span class="subcategory-count">0</span></button>
         </nav>
       </div>
@@ -69,7 +69,7 @@
         <div class="library-heading">
           <div class="heading-title"><h2 id="library-title">所有素材</h2><span id="result-count" class="result-count" aria-live="polite">…</span></div>
           <label class="search-box"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">搜索素材</span><input id="search" type="search" placeholder="搜个词，找点灵感" autocomplete="off"></label>
-          <div class="library-actions"><button class="button button-plain" id="selection-toggle" type="button" aria-pressed="false">多选</button><button class="button button-plain" id="export-open" type="button"><svg class="icon"><use href="#i-download"/></svg>导出</button><button class="button button-plain" id="import-open" type="button"><svg class="icon"><use href="#i-upload"/></svg>批量导入</button></div>
+          <div class="library-actions"><button class="button button-plain" id="selection-toggle" type="button" aria-pressed="false">多选</button><button class="button button-plain" id="export-open" type="button"><svg class="icon"><use href="#i-download"/></svg>导出</button><button class="button button-plain" id="import-open" type="button"><svg class="icon"><use href="#i-upload"/></svg>导入</button></div>
         </div>
         <div id="selection-tools" class="selection-tools" hidden><span id="selection-count" aria-live="polite">已选 0 条</span><button class="text-button" id="select-results" type="button">全选当前结果</button><button class="text-button" id="clear-selection" type="button">清空选择</button><button class="text-button selection-delete" id="delete-selected" type="button" disabled>删除所选</button></div>
         <div id="material-grid" class="material-grid" role="region" aria-label="素材浏览区" tabindex="0" aria-live="polite"><p class="loading">正在打开题库…</p></div>
@@ -103,7 +103,7 @@
     <form id="editor-form">
       <div class="modal-heading"><h2 id="editor-title">添加素材</h2><button class="icon-button" type="button" data-close="editor-dialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button></div>
       <label class="field"><span>题目 <span class="required">*</span></span><textarea id="editor-text" name="text" rows="4" maxlength="10000" placeholder="一个词、一句歌词，或一个让人笑出声的梗" required></textarea></label>
-      <div class="field"><label id="editor-type-name" for="editor-type">分类</label><select id="editor-type" name="type" data-web-select><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗句</option><option value="lyrics">歌词</option></optgroup></select></div>
+      <div class="field"><label id="editor-type-name" for="editor-type">分类</label><select id="editor-type" name="type" data-web-select><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗</option><option value="lyrics">歌词</option></optgroup></select></div>
       <label class="field"><span>备注</span><textarea id="editor-notes" name="notes" rows="2" maxlength="2000" placeholder="歌名、出处，或玩法提示（可选）"></textarea></label>
       <label class="checkbox-label"><input id="editor-classic" name="isClassic" type="checkbox"><svg class="icon"><use href="#i-star"/></svg>收进经典永流传</label>
       <p id="editor-error" class="form-error" role="alert" hidden></p>
@@ -119,7 +119,7 @@
   </dialog>
 
   <dialog id="import-dialog" class="modal import-modal" aria-labelledby="import-title">
-    <div class="modal-heading"><h2 id="import-title">批量导入</h2><button class="icon-button" type="button" data-close="import-dialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button></div>
+    <div class="modal-heading"><h2 id="import-title">导入</h2><button class="icon-button" type="button" data-close="import-dialog" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button></div>
     <div class="import-tabs" role="tablist" aria-label="导入方式"><button id="tab-csv" class="import-tab active" role="tab" aria-selected="true" aria-controls="csv-panel" data-import-tab="csv" type="button">CSV 文件</button><button id="tab-paste" class="import-tab" role="tab" aria-selected="false" aria-controls="paste-panel" data-import-tab="paste" type="button">批量粘贴</button></div>
     <div id="csv-panel" role="tabpanel" aria-labelledby="tab-csv">
       <label class="dropzone" id="dropzone"><input type="file" id="csv-file" accept=".csv,text/csv" class="sr-only"><svg class="icon"><use href="#i-upload"/></svg><strong id="file-name">选择或拖入 CSV 文件</strong><span>最大 5 MB</span></label>
@@ -128,7 +128,7 @@
     <div id="paste-panel" role="tabpanel" aria-labelledby="tab-paste" hidden>
       <label class="field"><span>一行一条</span><textarea id="paste-text" rows="6" placeholder="孙悟空&#10;星星&#10;命运的齿轮开始转动了"></textarea></label>
       <div class="field-pair">
-        <div class="field"><label id="paste-type-name" for="paste-type">统一分类</label><select id="paste-type" data-web-select><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗句</option><option value="lyrics">歌词</option></optgroup></select></div>
+        <div class="field"><label id="paste-type-name" for="paste-type">统一分类</label><select id="paste-type" data-web-select><optgroup label="长盛不衰"><option value="poetry">诗词</option><option value="general">经典词语</option><option value="sentence">经典句子</option></optgroup><optgroup label="引领潮流"><option value="meme">梗</option><option value="lyrics">歌词</option></optgroup></select></div>
         <div class="field"><label id="paste-difficulty-name" for="paste-difficulty">统一难度</label><select id="paste-difficulty" data-web-select><option value="easy">简单</option><option value="normal" selected>普通</option><option value="hard">挑战</option></select></div>
       </div>
       <label class="field"><span>标签</span><input id="paste-tags" placeholder="用顿号或逗号分隔（可选）"></label>
@@ -146,7 +146,16 @@
     <button class="export-option" data-export="csv" type="button"><span><strong>完整表格</strong><span class="export-sample">保留类型、标签、备注等信息</span></span><span class="file-label">CSV<svg class="icon"><use href="#i-download"/></svg></span></button>
   </dialog>
 
-  <dialog id="delete-dialog" class="modal delete-modal" aria-labelledby="delete-title"><div class="modal-heading"><h2 id="delete-title">删除这条素材？</h2><button class="icon-button" type="button" data-close="delete-dialog" aria-label="取消删除"><svg class="icon"><use href="#i-close"/></svg></button></div><p id="delete-text" class="delete-text"></p><p id="delete-error" class="form-error" role="alert" hidden></p><div class="modal-footer"><span class="spacer"></span><button class="button button-plain" type="button" data-close="delete-dialog">取消</button><button class="button button-danger" id="confirm-delete" type="button">确认删除</button></div></dialog>
+  <dialog id="delete-dialog" class="modal delete-modal" aria-labelledby="delete-title">
+    <form id="delete-form">
+      <div class="modal-heading"><h2 id="delete-title">删除权限验证</h2><button class="icon-button" type="button" data-close="delete-dialog" aria-label="取消删除"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <p id="delete-text" class="delete-text"></p>
+      <label class="field"><span>姓名／昵称</span><input id="delete-name" name="name" autocomplete="nickname" maxlength="60" placeholder="请输入姓名或昵称" required></label>
+      <label class="field"><span>管理员密码</span><input id="delete-password" name="password" type="password" autocomplete="off" maxlength="1024" placeholder="请输入管理员密码" required></label>
+      <p id="delete-error" class="form-error" role="alert" hidden></p>
+      <div class="modal-footer"><span class="spacer"></span><button class="button button-plain" type="button" data-close="delete-dialog">取消</button><button class="button button-danger" id="confirm-delete" type="submit">验证并删除</button></div>
+    </form>
+  </dialog>
   <div id="toast" class="toast" role="status" hidden></div>
 </body>
 </html>

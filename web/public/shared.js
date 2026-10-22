@@ -1,4 +1,4 @@
-export const TYPES = { poetry: '诗词', general: '经典词语', sentence: '经典句子', meme: '梗句', lyrics: '歌词' };
+export const TYPES = { poetry: '诗词', general: '经典词语', sentence: '经典句子', meme: '梗', lyrics: '歌词' };
 export const DIFFICULTIES = { easy: '简单', normal: '普通', hard: '挑战' };
 export const GROUPS = { evergreen: ['poetry', 'general', 'sentence'], trending: ['meme', 'lyrics'] };
 
@@ -23,7 +23,7 @@ function textField(value, label, max, required = false) {
 export function normalizeMaterial(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new ValidationError('素材格式不正确');
   const text = textField(input.text, '题目', 10000, true);
-  if (!Object.hasOwn(TYPES, input.type)) throw new ValidationError('请选择诗词、经典词语、经典句子、梗句或歌词');
+  if (!Object.hasOwn(TYPES, input.type)) throw new ValidationError('请选择诗词、经典词语、经典句子、梗或歌词');
   const difficulty = input.difficulty || 'normal';
   if (!Object.hasOwn(DIFFICULTIES, difficulty)) throw new ValidationError('难度需要是简单、普通或挑战');
   if (input.isClassic !== undefined && typeof input.isClassic !== 'boolean') throw new ValidationError('经典标记格式不正确');
@@ -98,7 +98,7 @@ const HEADER_ALIASES = {
   '来源': 'source', source: 'source', '演示': 'isDemo', isdemo: 'isDemo',
 };
 const typeAliases = {
-  '通用词库': 'general', '古诗词': 'poetry', '梗': 'meme',
+  '通用词库': 'general', '古诗词': 'poetry', '梗句': 'meme',
   ...Object.fromEntries(Object.entries(TYPES).flatMap(([key, label]) => [[key, key], [label, key]])),
 };
 const difficultyAliases = Object.fromEntries(Object.entries(DIFFICULTIES).flatMap(([key, label]) => [[key, key], [label, key]]));

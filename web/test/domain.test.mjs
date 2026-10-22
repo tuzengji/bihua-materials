@@ -23,7 +23,7 @@ test('CSV 导入兼容分类的新旧名称', () => {
   const items = rows.map(item => normalizeMaterial(item));
   assert.deepEqual(items.map(item => item.type), ['general', 'general', 'sentence', 'poetry', 'poetry', 'meme', 'meme', 'lyrics']);
   const exported = materialsCSV(items);
-  assert.match(exported, /经典词语/); assert.match(exported, /经典句子/); assert.match(exported, /诗词/); assert.match(exported, /梗句/);
+  assert.match(exported, /经典词语/); assert.match(exported, /经典句子/); assert.match(exported, /诗词/); assert.match(exported, /"梗"/); assert.doesNotMatch(exported, /梗句/);
   assert.deepEqual(parseMaterialCSV(exported).map(item => normalizeMaterial(item)), items);
 });
 test('出题整轮无重复，换题重新隐藏；题库变化不会改动本轮快照', () => {

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve, extname } from 'node:path';
 import { networkInterfaces } from 'node:os';
 import { createStore, StoreError } from './lib/store.mjs';
+import { createDeleteVerifier, readPasswordRecord } from './lib/admin.mjs';
 import { materialsCSV, materialsText, ValidationError } from './public/shared.js';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -29,7 +30,8 @@ function sendJSON(response, status, body) {
   response.end(JSON.stringify(body));
 }
 
-export function createApp({ dbPath = join(root, 'data', 'materials.sqlite'), seed = true } = {}) {
+export function createApp({ dbPath = join(root, 'data', 'materials.sqlite'), seed = true, adminPasswordRecord = readPasswordRecord(process.env.ADMIN_AUTH_FILE || join(root, 'data', 'admin.json')) } = {}) {
+  const verifyDelete = createDeleteVerifier(adminPasswordRecord);
   const store = createStore(dbPath, { seed });
   const server = http.createServer(async (request, response) => {
     response.setHeader('X-Content-Type-Options', 'nosniff');
@@ -71,7 +73,8 @@ export function createApp({ dbPath = join(root, 'data', 'materials.sqlite'), see
         if (method === 'POST') return sendJSON(response, 201, { item: store.add(await readJSON(request)) });
         if (method === 'DELETE') {
           const body = await readJSON(request);
-          return sendJSON(response, 200, store.removeMany(body?.ids));
+          const actor = await verifyDelete(body?.auth, request.socket.remoteAddress);
+          return sendJSON(response, 200, store.removeMany(body?.ids, { actor }));
         }
         throw new StoreError('不支持这个操作', 405);
       }
@@ -83,7 +86,11 @@ export function createApp({ dbPath = join(root, 'data', 'materials.sqlite'), see
           if (!body || typeof body !== 'object' || Array.isArray(body)) throw new StoreError('素材格式不正确');
           return sendJSON(response, 200, { item: store.update(match[1], body) });
         }
-        if (method === 'DELETE') { store.remove(match[1]); response.writeHead(204); return response.end(); }
+        if (method === 'DELETE') {
+          const body = await readJSON(request);
+          const actor = await verifyDelete(body?.auth, request.socket.remoteAddress);
+          store.remove(match[1], { actor }); response.writeHead(204); return response.end();
+        }
         throw new StoreError('不支持这个操作', 405);
       }
       if (path.startsWith('/api/')) throw new StoreError('接口不存在', 404);
@@ -96,6 +103,7 @@ export function createApp({ dbPath = join(root, 'data', 'materials.sqlite'), see
     } catch (error) {
       if (response.headersSent) return response.end();
       const status = error instanceof ValidationError ? 400 : error.status || (error.code === 'ENOENT' ? 404 : 500);
+      if (error.retryAfter) response.setHeader('Retry-After', String(error.retryAfter));
       if (status === 500) console.error(error);
       sendJSON(response, status, { error: status === 500 ? '服务暂时遇到问题，请重试' : error.message, ...(error.details ? { details: error.details } : {}) });
     }
